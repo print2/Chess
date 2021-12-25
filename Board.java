@@ -1,23 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class Board
+public class Board implements ActionListener
 {
-    Picture BlackPawn=new Picture("Chess_pdt60.png",0);
-    Picture BlackBishop=new Picture("Chess_bdt60.png",0);
-    Picture BlackRook=new Picture("Chess_rdt60.png",0);
-    Picture BlackKnight=new Picture("Chess_ndt60.png",0);
-    Picture BlackKing=new Picture("Chess_kdt60.png",0);
-    Picture BlackQueen=new Picture("Chess_qdt60.png",0);
-    Picture WhitePawn=new Picture("Chess_plt60.png",0);
-    Picture WhiteBishop=new Picture("Chess_blt60.png",0);
-    Picture WhiteRook=new Picture("Chess_rlt60.png",0);
-    Picture WhiteKnight=new Picture("Chess_nlt60.png",0);
-    Picture WhiteKing=new Picture("Chess_klt60.png",0);
-    Picture WhiteQueen=new Picture("Chess_qlt60.png",0);
     JButton squares[]=new JButton[64];
     JFrame frame=new JFrame();
     private JPanel p = new JPanel(new GridLayout(8,8));
+    private boolean waiting=false;
+    private JButton origin;
+    private JButton destination;
     
     public Board()
     {
@@ -41,8 +33,29 @@ public class Board
         squares[61]=new JButton(new WhiteBishop());
         squares[62]=new JButton(new WhiteKnight());
         squares[63]=new JButton(new WhiteRook());
-        for (JButton b: squares) p.add(b);
+        for (JButton b: squares) 
+        {
+            b.addActionListener(this);
+            p.add(b);
+        }
         frame.setContentPane(p);
         frame.setVisible(true);
     }    
+    public void actionPerformed(ActionEvent e)
+    {
+        if (waiting==true)
+        {
+            destination=(JButton)e.getSource();
+            //if (((Piece)destination.getIcon()).move(getXChange(origin,destination),getYChange(origin,destination))
+            destination.setIcon(origin.getIcon());
+            origin.setIcon(null);
+            waiting=false;
+        }
+        else
+        {
+            origin=(JButton)e.getSource();
+            waiting=true;
+        }
+
+    }
 }
