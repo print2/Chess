@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.awt.event.*;
 
 public class Board implements ActionListener
@@ -46,9 +47,18 @@ public class Board implements ActionListener
         if (waiting==true)
         {
             destination=(JButton)e.getSource();
-            //if (((Piece)destination.getIcon()).move(getXChange(origin,destination),getYChange(origin,destination))
-            destination.setIcon(origin.getIcon());
-            origin.setIcon(null);
+            if (origin.getIcon()!=null)
+            {
+                int start=Arrays.asList(squares).indexOf(origin);
+                int end=Arrays.asList(squares).indexOf(destination);
+                int x=(end%8)-(start%8);
+                int y=(end/8)-(start/8);
+                if (checkDest() && ((Piece)origin.getIcon()).move(x,y,destination) && checkRoute(x,y,start,end))
+                {
+                    destination.setIcon(origin.getIcon());
+                    origin.setIcon(null);
+                }
+            }
             waiting=false;
         }
         else
@@ -58,4 +68,24 @@ public class Board implements ActionListener
         }
 
     }
+
+    public boolean checkRoute(int x, int y, int start, int end)
+    {
+        boolean travelled=false;//true if piece travels over a square to get to its destination
+        for (int i=Math.min(start,end); i<Math.max(start,end); i+=Math.abs((end-start)/Math.max(Math.abs(y),Math.abs(x)))) 
+        {
+            travelled=true;
+            if (squares[i].getIcon()!=null) return false;
+        }
+        if (travelled)return true;
+        else return false;
+    }
+
+    public boolean checkDest()
+    {
+        //checks if piece is allowed to be in that square (if a piece of the same colour occupies the square, it can't be replaced)
+        if ((origin.getIcon() instanceof White && destination.getIcon() instanceof White)||(origin.getIcon() instanceof Black && destination.getIcon() instanceof Black)) return false;
+        else return true;
+    }
+
 }
